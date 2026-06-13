@@ -106,30 +106,13 @@
 <div class="phone">
     <div class="top-bar">
         <span class="title">失智症照顧：當長者說「不要」時</span>
-        <span class="counter" id="slideCounter">1 / 12</span>
+        <span class="counter" id="slideCounter">1 / 11</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
 
     <div class="stage" id="stage">
-        <!-- S1: Title -->
-        <div class="slide active" data-duration="9">
-            <div class="flex-col" style="text-align:center;">
-                <div style="font-size:4rem;margin-bottom:12px;">👩‍⚕️</div>
-                <div class="headline">失智症照顧</div>
-                <div class="headline">當長者說「不要」時</div>
-                <div class="subhead" style="margin-top:16px;">實證研究 × 教學前導影片</div>
-                <div class="subtitle-box" style="margin-top:24px;">
-                    <div class="subtitle-line" data-delay="1.5">本影片內容基於國際實證文獻</div>
-                    <div class="subtitle-line" data-delay="5">2021年 Backhouse 系統性文獻回顧 · 2026年 Chen &amp; Li 對話分析 · 2021年 Leverton 民族誌研究</div>
-                </div>
-                <div id="playOverlay" style="margin-top:20px;text-align:center;">
-                    <button id="playBtn" style="background:var(--dark);color:#fff;border:none;border-radius:16px;padding:14px 40px;font-size:1.2rem;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);">▶ 開始播放</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- S2: 問題意識 -->
-        <div class="slide" data-duration="18">
+        <!-- S1: 問題意識 -->
+        <div class="slide active" data-duration="18">
             <div class="flex-col">
                 <div class="key-visual">😰</div>
                 <div class="headline">照顧中的日常困境</div>
@@ -441,11 +424,7 @@
         goTo(0);
     });
 
-    document.getElementById('playBtn').addEventListener('click', () => {
-        bgm.play();
-        document.getElementById('playOverlay').style.display = 'none';
-        goTo(0);
-    });
+    bgm.play().catch(() => {});
 </script>
 </body>
 </html>
