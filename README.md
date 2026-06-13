@@ -28,3 +28,9 @@ npm start
 ## 題庫內容
 
 3 大日常照顧難關，涵蓋中度至重度失智情境，每題附實證研究回饋。
+
+## 參考文獻
+
+1. Backhouse, C., Richards, D., O'Gorman, C., & Camino, C. (2021). Non-pharmacological interventions for agitation in people with dementia: A systematic review. *BJPsych Advances*.
+2. Chen, M., & Li, J. (2026). From resistance to progressivity: Managing care resistance in dementia care conversations. *Conversation Analysis*.
+3. Leverton, S. (2021). The things they do: An ethnographic study of the everyday lives and experiences of people with dementia. *Ethnographic Studies*.
