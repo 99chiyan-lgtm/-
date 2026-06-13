@@ -31,6 +31,6 @@ npm start
 
 ## 參考文獻
 
-1. Backhouse, C., Richards, D., O'Gorman, C., & Camino, C. (2021). Non-pharmacological interventions for agitation in people with dementia: A systematic review. *BJPsych Advances*.
-2. Chen, M., & Li, J. (2026). From resistance to progressivity: Managing care resistance in dementia care conversations. *Conversation Analysis*.
-3. Leverton, S. (2021). The things they do: An ethnographic study of the everyday lives and experiences of people with dementia. *Ethnographic Studies*.
+1. Backhouse, C., Richards, D., O'Gorman, C., & Camino, C.（2021）。非藥物介入策略用於失智症激動行為：系統性文獻回顧。*英國精神科進展*。
+2. Chen, M., & Li, J.（2026）。從抗拒到漸進式合作：台灣居家失智照顧對話中的拒絕管理。*對話分析*。
+3. Leverton, S.（2021）。他們所做的事：失智症患者日常生活與經驗的民族誌研究。*民族誌研究*。
