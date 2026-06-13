@@ -123,6 +123,9 @@
                     <div class="subtitle-line" data-delay="8">「我今天哪都不去！」</div>
                     <div class="subtitle-line" data-delay="12">這些「不要」的背後，其實是長者有未被滿足的需求</div>
                 </div>
+                <div id="playOverlay" style="margin-top:20px;text-align:center;">
+                    <button id="playBtn" style="background:var(--dark);color:#fff;border:none;border-radius:16px;padding:14px 40px;font-size:1.2rem;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);">▶ 開始播放</button>
+                </div>
             </div>
         </div>
         
@@ -421,7 +424,11 @@
         goTo(0);
     });
 
-    bgm.play().catch(() => {});
+    document.getElementById('playBtn').addEventListener('click', () => {
+        bgm.play();
+        document.getElementById('playOverlay').style.display = 'none';
+        goTo(0);
+    });
 </script>
 </body>
 </html>
