@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>失智症照顧與拒絕管理實務挑戰賽</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="phone-container">
+    <div class="header">
+        <span id="header-title">失智症照顧挑戰賽</span>
+        <span id="score-display" style="font-size:0.9rem; float:right;">得分：0</span>
+        <div style="clear:both;"></div>
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    </div>
+
+    <div class="game-stage">
+        
+        <div class="screen active" id="screen-start">
+            <div class="center-content">
+                <div style="font-size: 5rem;">👩‍⚕️</div>
+                <h1>拒絕管理實務挑戰</h1>
+                <p>親愛的居服員，失智長者說「不要」時該怎麼辦？<br>點擊開始，挑戰 3 大日常照顧難關！</p>
+                <button class="btn btn-action" onclick="startGame()">開始挑戰</button>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-quiz">
+            <div class="scenario-card">
+                <div class="character-img" id="char-icon">👵</div>
+                <div style="font-weight: bold;" id="char-name">李奶奶</div>
+                <div class="dialogue-box" id="question-text">題目載入中...</div>
+            </div>
+            <div id="options-container"></div>
+        </div>
+
+        <div class="screen" id="screen-end">
+            <div class="center-content">
+                <div style="font-size: 5rem;">🏆</div>
+                <h1>挑戰完成！</h1>
+                <p id="final-score-text" style="font-size:1.3rem; font-weight:bold; margin-bottom:12px;"></p>
+                <p>你已成功掌握失智症溝通心法！將實證知識運用於日常照顧中，能讓長者更安心，也讓你的照顧更輕鬆尊嚴！</p>
+                <button class="btn btn-action" onclick="resetGame()">再挑戰一次</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="feedback-overlay" id="feedback-modal">
+        <div class="feedback-card" id="feedback-card">
+            <div class="feedback-title" id="feedback-title"></div>
+            <div class="feedback-text" id="feedback-text"></div>
+            <button class="btn btn-action" onclick="nextQuestion()">確認</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/script.js"></script>
+
+</body>
+</html>

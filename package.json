@@ -1,0 +1,12 @@
+{
+  "name": "dementia-care-challenge",
+  "version": "1.0.0",
+  "description": "失智症照顧與拒絕管理實務挑戰賽 - 互動式教學網頁",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx live-server . --port=3000 --no-browser"
+  },
+  "keywords": ["dementia", "care", "education", "interactive"],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>失智症照顧：當長者說「不要」時</title>
+    <style>
+        :root {
+            --bg: #F5EBE6;
+            --pink: #E8D7D0;
+            --dark: #C5A89E;
+            --text: #5A4B45;
+            --white: #FFFFFF;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC','Microsoft JhengHei',sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #222; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .phone {
+            width: 100%; max-width: 412px; height: 100vh; max-height: 846px;
+            background: var(--bg); color: var(--text); display: flex; flex-direction: column;
+            position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .top-bar {
+            padding: 14px 16px 10px; background: var(--pink); display: flex; align-items: center; justify-content: space-between;
+            border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 10;
+        }
+        .top-bar .title { font-weight: bold; font-size: 1rem; opacity: 0.7; }
+        .top-bar .counter { font-size: 0.9rem; opacity: 0.7; }
+        .progress-track {
+            width: 100%; height: 4px; background: rgba(255,255,255,0.5); border-radius: 2px; margin-top: 6px; overflow: hidden;
+        }
+        .progress-fill { height: 100%; width: 0%; background: var(--dark); transition: width 0.4s ease; border-radius: 2px; }
+
+        .stage { flex: 1; position: relative; overflow: hidden; }
+        .slide {
+            position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+            padding: 30px 24px; opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
+        }
+        .slide.active { opacity: 1; pointer-events: auto; }
+
+        .icon-area { text-align: center; font-size: 4rem; margin-bottom: 12px; }
+        .icon-area .icon { display: inline-block; }
+
+        .headline {
+            font-size: 1.9rem; font-weight: bold; text-align: center; margin-bottom: 10px;
+            color: #4A3E39; line-height: 1.3;
+        }
+        .subhead {
+            font-size: 1.2rem; text-align: center; line-height: 1.5; margin-bottom: 14px; opacity: 0.8;
+        }
+
+        .subtitle-box {
+            background: var(--white); border-radius: 12px; padding: 18px 20px; margin-top: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); min-height: 60px;
+        }
+        .subtitle-line {
+            font-size: 1.15rem; line-height: 1.6; margin-bottom: 8px; opacity: 0; transform: translateY(8px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .subtitle-line.show { opacity: 1; transform: translateY(0); }
+
+        .highlight-box {
+            background: var(--pink); border-radius: 14px; padding: 14px; margin-top: 8px; text-align: center;
+            font-weight: bold; font-size: 1.15rem;
+        }
+
+        .data-badge {
+            display: inline-block; background: var(--dark); color: #fff; border-radius: 20px;
+            padding: 6px 16px; font-size: 1rem; margin: 4px 2px;
+        }
+
+        .controls {
+            padding: 10px 16px 16px; display: flex; align-items: center; gap: 12px; background: var(--bg);
+        }
+        .ctrl-btn {
+            background: var(--white); border: 1px solid var(--pink); border-radius: 8px;
+            padding: 10px 16px; font-size: 0.95rem; cursor: pointer; color: var(--text); transition: 0.15s;
+        }
+        .ctrl-btn:active { background: var(--pink); }
+        .ctrl-btn.primary { background: var(--dark); color: #fff; border: none; flex: 1; }
+
+        .key-visual {
+            font-size: 5rem; text-align: center; margin-bottom: 8px; line-height: 1;
+        }
+
+        .flex-col { display: flex; flex-direction: column; flex: 1; justify-content: center; }
+
+        .tag {
+            display: inline-block; background: var(--dark); color: #fff; border-radius: 12px;
+            padding: 4px 12px; font-size: 0.9rem; margin-bottom: 6px;
+        }
+
+        .el-enter { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .el-enter.show { opacity: 1; transform: translateY(0); }
+
+        .check-list { list-style: none; padding: 0; }
+        .check-list li { padding: 4px 0; font-size: 0.9rem; }
+        .check-list li::before { content: '✅ '; }
+
+        .warn-list { list-style: none; padding: 0; }
+        .warn-list li { padding: 4px 0; font-size: 0.9rem; }
+        .warn-list li::before { content: '⚠️ '; }
+        @keyframes blink { 0%,100%{opacity:0.4} 50%{opacity:1} }
+    </style>
+</head>
+<body>
+<div class="phone">
+    <div class="top-bar">
+        <span class="title">失智症照顧：當長者說「不要」時</span>
+        <span class="counter" id="slideCounter">1 / 12</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="stage" id="stage">
+        <!-- S1: Title -->
+        <div class="slide active" data-duration="6">
+            <div class="flex-col" style="text-align:center;">
+                <div style="font-size:4rem;margin-bottom:12px;">👩‍⚕️</div>
+                <div class="headline">失智症照顧</div>
+                <div class="headline">當長者說「不要」時</div>
+                <div class="subhead" style="margin-top:16px;">實證研究 × 教學前導影片</div>
+                <div class="subtitle-box" style="margin-top:24px;">
+                    <div class="subtitle-line" data-delay="1">本影片內容基於國際實證文獻</div>
+                    <div class="subtitle-line" data-delay="4">Backhouse 2021 · Chen &amp; Li 2026 · Leverton 2021</div>
+                </div>
+                <div id="playOverlay" style="margin-top:20px;text-align:center;">
+                    <button id="playBtn" style="background:var(--dark);color:#fff;border:none;border-radius:16px;padding:14px 40px;font-size:1.2rem;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);">▶ 開始播放</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- S2: 問題意識 -->
+        <div class="slide" data-duration="12">
+            <div class="flex-col">
+                <div class="key-visual">😰</div>
+                <div class="headline">照顧中的日常困境</div>
+                <div class="subhead">將近 7 成的居服員與家屬，都曾遇過長者拒絕照顧</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">「我不要吃藥！」</div>
+                    <div class="subtitle-line" data-delay="2.5">「我不要洗澡！」</div>
+                    <div class="subtitle-line" data-delay="5">「我今天哪都不去！」</div>
+                    <div class="subtitle-line" data-delay="8">這些「不要」的背後，其實是長者有未被滿足的需求</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- S3: 核心訊息 -->
+        <div class="slide" data-duration="9">
+            <div class="flex-col">
+                <div class="key-visual">💡</div>
+                <div class="headline">拒絕不是症狀</div>
+                <div class="headline" style="margin-bottom:12px;">—— 而是對話的一部分</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">國際對話分析研究發現：</div>
+                    <div class="subtitle-line" data-delay="3">照顧者如何「接住」拒絕，決定了互動的成敗</div>
+                    <div class="subtitle-line" data-delay="6">拒絕是一個轉折點，而不是終點</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- S4: 策略一 順延時間法 -->
+        <div class="slide" data-duration="13">
+            <div class="flex-col">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                    <span class="tag">策略一</span>
+                    <span style="opacity:0.7;">實證支持 ✓</span>
+                </div>
+                <div class="headline">順延時間法</div>
+                <div class="subhead">先接受，再延後</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0"><b>情境：</b>奶奶拒絕喝營養品</div>
+                    <div class="subtitle-line" data-delay="3" style="color:var(--dark);font-weight:bold;">✅「沒關係，我們等一下回來再喝」</div>
+                    <div class="subtitle-line" data-delay="6.5">保留任務的可完成性，避免權力對抗</div>
+                </div>
+                <div style="margin-top:8px;">
+                    <div class="subtitle-line" data-delay="9" style="opacity:0.8;">⚠ 避免：疊字哄騙（長者腔）或權威催促</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- S5: 策略一 對比 -->
+        <div class="slide" data-duration="12">
+            <div class="flex-col">
+                <div class="key-visual">🗣️</div>
+                <div class="headline">什麼是「長者腔」？</div>
+                <div class="highlight-box" style="background:#FCE4EC;border-color:#F06292;margin-top:8px;">
+                    <div style="font-size:1.1rem;font-weight:bold;">長者腔 = 當大人對小孩說話的語氣，用在長者身上</div>
+                    <div style="font-size:0.95rem;margin-top:6px;">
+                        <b>典型特徵：</b>疊字（乖乖、吃吃、喝喝）、語速過慢、音調過高、用詞幼稚、自稱「我們」不稱「你」
+                    </div>
+                </div>
+                <div class="headline" style="margin-top:12px;">溝通風格的影響</div>
+                <div style="margin-top:8px;">
+                    <div class="subtitle-line" data-delay="0">CHAT 研究證實：</div>
+                    <div class="subtitle-line" data-delay="2.5">長者腔每減少 1%</div>
+                    <div class="subtitle-line" data-delay="5" style="font-weight:bold;font-size:1.25rem;">拒絕行為就減少 0.43%</div>
+                    <div class="subtitle-line" data-delay="7.5">(Williams et al., 2017)</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- S6: 策略二 降級提案 -->
+        <div class="slide" data-duration="12">
+            <div class="flex-col">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                    <span class="tag">策略二</span>
+                    <span style="font-size:0.95rem;opacity:0.7;">實證支持 ✓</span>
+                </div>
+                <div class="headline">任務降級提案</div>
+                <div class="subhead">Downgraded Proposals — 降低門檻</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0"><b>情境：</b>爺爺抗拒去公園散步</div>
+                    <div class="subtitle-line" data-delay="2" style="color:var(--dark);font-weight:bold;">✅「那我們在門口站一下就好」</div>
+                    <div class="subtitle-line" data-delay="4.5">把目標變小，成功機會就變大</div>
+                </div>
+                <div style="margin-top:8px;">
+                    <div class="subtitle-line" data-delay="6">散步 → 門口站一下  洗澡 → 床邊拭浴</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- S7: 策略三 環境改良 -->
+        <div class="slide" data-duration="12">
+            <div class="flex-col">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                    <span class="tag">策略三</span>
+                    <span style="opacity:0.7;">實證支持 ✓</span>
+                </div>
+                <div class="headline">環境改良 + 音樂介入</div>
+                <div class="subhead">不再為洗澡作戰</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">用溫熱毛巾床邊拭浴（毛巾浴）</div>
+                    <div class="subtitle-line" data-delay="3">取代傳統強行沖澡</div>
+                    <div class="subtitle-line" data-delay="6" style="font-weight:bold;color:var(--dark);">降低高達 50%–60% 的沐浴衝突</div>
+                </div>
+                <div class="highlight-box el-enter" data-delay="9" style="background:#FFF3E0;border:2px solid #FFB84D;margin-top:12px;">
+                    <div style="font-size:2rem;margin-bottom:6px;">🎵</div>
+                    <div style="font-size:1.1rem;font-weight:bold;">關鍵加分項：播放長者喜愛的音樂</div>
+                    <div style="font-size:0.95rem;opacity:0.9;margin-top:4px;">研究證實：配合個別化音樂，可再顯著降低攻擊與抗拒行為</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- S8: 策略三 數據 -->
+        <div class="slide" data-duration="8">
+            <div class="flex-col" style="text-align:center;">
+                <div class="key-visual">📊</div>
+                <div class="headline" style="font-size:1.4rem;">三種策略的實證成效</div>
+                <div style="margin-top:12px;">
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">
+                        <span class="data-badge">順延時間法</span>
+                        <span class="data-badge">任務降級</span>
+                        <span class="data-badge">毛巾拭浴 -60%</span>
+                        <span class="data-badge">音樂介入 🎵</span>
+                    </div>
+                </div>
+                <div class="subtitle-box" style="margin-top:12px;">
+                    <div class="subtitle-line" data-delay="0">文獻來源：Sloane 2004 · Backhouse 2021</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- S9: 拒絕是對話 -->
+        <div class="slide" data-duration="10">
+            <div class="flex-col">
+                <div class="key-visual">🔄</div>
+                <div class="headline">拒絕是對話的一部分</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">台灣居家照顧對話分析發現：</div>
+                    <div class="subtitle-line" data-delay="2.5">照顧者透過「提出→拒絕→調整→合作」循環</div>
+                    <div class="subtitle-line" data-delay="5.5">逐步推進照顧任務（Chen &amp; Li, 2026）</div>
+                </div>
+                <div style="margin-top:8px;">
+                    <div class="subtitle-line" data-delay="7.5">沉默也是一種拒絕訊號 — 專業照顧者懂得覺察</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- S10: 雙人舞 -->
+        <div class="slide" data-duration="9">
+            <div class="flex-col">
+                <div class="key-visual">💃</div>
+                <div class="headline">照顧是一場雙人舞</div>
+                <div class="subhead">不是單方面的指令</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">減少控制性語言</div>
+                    <div class="subtitle-line" data-delay="2.5">多用開放式邀請</div>
+                    <div class="subtitle-line" data-delay="5">用「阿姨」取代冷冰冰的稱呼</div>
+                    <div class="subtitle-line" data-delay="7" style="color:var(--dark);font-weight:bold;">合作代替控制</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- S11: 行動呼籲 -->
+        <div class="slide" data-duration="9">
+            <div class="flex-col" style="text-align:center;">
+                <div style="font-size:4rem;margin-bottom:8px;">🎯</div>
+                <div class="headline">每一次拒絕</div>
+                <div class="headline" style="margin-bottom:12px;">都是一次理解的機會</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="1">準備好挑戰實戰了嗎？</div>
+                </div>
+                <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+                    <a href="file:///D:/%E5%A4%B1%E6%99%BA%E7%97%87/index.html" target="_blank" style="background:var(--dark);color:#fff;border:none;border-radius:20px;padding:10px 24px;font-size:1.1rem;font-weight:bold;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);">👉 開始互動挑戰</a>
+                </div>
+                <div style="margin-top:12px;">
+                    <div class="subtitle-line" data-delay="4" style="opacity:0.7;">點擊上方按鈕開始練習</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- S12: 結尾 -->
+        <div class="slide" data-duration="8">
+            <div class="flex-col" style="text-align:center;">
+                <div style="font-size:3.5rem;margin-bottom:8px;">📖</div>
+                <div class="headline" style="font-size:1.3rem;">本影片內容基於以下文獻</div>
+                <div style="margin-top:10px;font-size:1rem;opacity:0.7;line-height:1.7;">
+                    Backhouse T, et al. (2021). Aging &amp; Mental Health<br>
+                    Chen C-H, Li C-Y. (2026). Language &amp; Communication<br>
+                    Leverton M, et al. (2021). Dementia<br>
+                    Sloane PD, et al. (2004). J Am Geriatr Soc
+                </div>
+                <div style="margin-top:16px;font-size:1.1rem;">謝謝觀看，一起成為更專業的照顧者</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding:0 16px 4px;">
+        <input type="range" id="timeline" min="0" max="11" value="0" step="1"
+               style="width:100%;height:6px;accent-color:var(--dark);cursor:pointer;">
+    </div>
+    <div class="controls">
+        <button class="ctrl-btn" id="btnToggle">⏸ 暫停</button>
+        <button class="ctrl-btn primary" id="btnNext">下一幕 →</button>
+        <button class="ctrl-btn" id="btnRestart">↺</button>
+    </div>
+</div>
+
+<audio id="bgm" loop preload="auto">
+    <source src="assets/background-music.mp3" type="audio/mpeg">
+</audio>
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const progressFill = document.getElementById('progressFill');
+    const counter = document.getElementById('slideCounter');
+    const btnToggle = document.getElementById('btnToggle');
+    const btnNext = document.getElementById('btnNext');
+    const btnRestart = document.getElementById('btnRestart');
+    const timeline = document.getElementById('timeline');
+    const bgm = document.getElementById('bgm');
+    let current = 0;
+    let paused = false;
+    let timer = null;
+    let subTimers = [];
+    let seeking = false;
+
+    function showSlide(index) {
+        slides.forEach((s, i) => s.classList.toggle('active', i === index));
+        const pct = ((index + 1) / slides.length * 100);
+        progressFill.style.width = pct + '%';
+        counter.textContent = (index + 1) + ' / ' + slides.length;
+        if (!seeking) timeline.value = index;
+    }
+
+    function animateSubtitles(slideEl) {
+        subTimers.forEach(clearTimeout);
+        subTimers = [];
+        const lines = slideEl.querySelectorAll('.subtitle-line');
+        lines.forEach(line => {
+            line.classList.remove('show');
+            const delay = parseFloat(line.dataset.delay) || 0;
+            const t = setTimeout(() => line.classList.add('show'), delay * 1000);
+            subTimers.push(t);
+        });
+        const els = slideEl.querySelectorAll('.el-enter');
+        els.forEach(el => {
+            el.classList.remove('show');
+            const delay = parseFloat(el.dataset.delay) || 0;
+            const t = setTimeout(() => el.classList.add('show'), delay * 1000);
+            subTimers.push(t);
+        });
+    }
+
+    function startAutoAdvance() {
+        if (timer) clearTimeout(timer);
+        if (paused) return;
+        const duration = (parseFloat(slides[current].dataset.duration) || 5) * 1000;
+        timer = setTimeout(() => {
+            if (!paused) {
+                if (current < slides.length - 1) { current++; goTo(current); }
+                else { paused = true; btnToggle.textContent = '▶ 重播'; }
+            }
+        }, duration);
+    }
+
+    function goTo(index) {
+        current = index;
+        showSlide(current);
+        animateSubtitles(slides[current]);
+        startAutoAdvance();
+    }
+
+    timeline.addEventListener('input', () => {
+        seeking = true;
+        if (timer) clearTimeout(timer);
+        subTimers.forEach(clearTimeout);
+        const idx = parseInt(timeline.value);
+        current = idx;
+        showSlide(current);
+        animateSubtitles(slides[current]);
+        if (!paused) startAutoAdvance();
+        setTimeout(() => { seeking = false; }, 100);
+    });
+
+    btnToggle.addEventListener('click', () => {
+        if (current === slides.length - 1 && paused) {
+            current = 0;
+            paused = false;
+            btnToggle.textContent = '⏸ 暫停';
+            bgm.play();
+            goTo(0);
+            return;
+        }
+        paused = !paused;
+        btnToggle.textContent = paused ? '▶ 播放' : '⏸ 暫停';
+        if (paused) { bgm.pause(); if (timer) clearTimeout(timer); }
+        else { bgm.play().catch(() => {}); startAutoAdvance(); }
+    });
+
+    btnNext.addEventListener('click', () => {
+        if (timer) clearTimeout(timer);
+        subTimers.forEach(clearTimeout);
+        if (current < slides.length - 1) { current++; goTo(current); }
+        else { paused = true; btnToggle.textContent = '▶ 重播'; }
+    });
+
+    btnRestart.addEventListener('click', () => {
+        if (timer) clearTimeout(timer);
+        subTimers.forEach(clearTimeout);
+        current = 0; paused = false;
+        btnToggle.textContent = '⏸ 暫停';
+        goTo(0);
+    });
+
+    document.getElementById('playBtn').addEventListener('click', () => {
+        bgm.play();
+        document.getElementById('playOverlay').style.display = 'none';
+        goTo(0);
+    });
+</script>
+</body>
+</html>
