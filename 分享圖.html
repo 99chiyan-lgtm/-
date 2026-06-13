@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { width:1200px; height:630px; overflow:hidden; font-family:"Microsoft JhengHei","PingFang TC",sans-serif; }
+.card {
+    width:1200px; height:630px;
+    background: linear-gradient(135deg, #F5EBE6 0%, #E8D7D0 50%, #C5A89E 100%);
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    padding:60px; text-align:center; position:relative;
+}
+.icon { font-size:80px; margin-bottom:20px; }
+.title { font-size:52px; font-weight:900; color:#3D2C2C; line-height:1.3; margin-bottom:16px; }
+.subtitle { font-size:26px; color:#5C4040; margin-bottom:30px; line-height:1.6; }
+.tags { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:30px; }
+.tag { background:#fff; color:#3D2C2C; padding:8px 20px; border-radius:20px; font-size:18px; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+.url { font-size:20px; color:#5C4040; opacity:0.8; margin-top:10px; }
+.badge { position:absolute; top:30px; right:30px; background:#3D2C2C; color:#F5EBE6; padding:10px 20px; border-radius:12px; font-size:16px; font-weight:bold; }
+.corner { position:absolute; bottom:0; left:0; width:200px; height:200px; background:rgba(197,168,158,0.3); border-radius:0 200px 0 0; }
+</style>
+</head>
+<body>
+<div class="card">
+    <div class="corner"></div>
+    <div class="badge">實證研究 × 互動教學</div>
+    <div class="icon">👩‍⚕️</div>
+    <div class="title">失智症照顧<br>當長者說「不要」時</div>
+    <div class="subtitle">3 大日常照顧難關 × 3 大實證策略</div>
+    <div class="tags">
+        <span class="tag">🎬 教學影片</span>
+        <span class="tag">🎮 互動測驗</span>
+        <span class="tag">📊 即時評分</span>
+    </div>
+    <div class="url">👇 點擊連結開始學習</div>
+</div>
+</body>
+</html>
