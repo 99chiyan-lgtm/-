@@ -3,53 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>失智症照顧與拒絕管理實務挑戰賽</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>服務紀錄撰寫原則挑戰賽</title>
+    <style>
+        :root {
+            --bg-color: #F0F4F0;
+            --primary: #D4E2D4;
+            --dark: #8BA88B;
+            --text: #3D4A3D;
+            --white: #FFFFFF;
+            --green: #4A7C4A;
+            --red: #C44A4A;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC','Microsoft JhengHei',sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #222; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .phone {
+            width: 100%; max-width: 412px; height: 100vh; max-height: 846px;
+            background: var(--bg-color); color: var(--text); display: flex; flex-direction: column;
+            position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .header {
+            padding: 16px; background: var(--primary); text-align: center; font-weight: bold; font-size: 1.1rem;
+            border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
+        }
+        .progress-bar { width: 80%; height: 8px; background: var(--white); border-radius: 4px; margin: 8px auto 0; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: var(--dark); transition: width 0.3s ease; }
+        .game-stage { flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; }
+        .screen { display: none; height: 100%; flex-direction: column; justify-content: space-between; }
+        .screen.active { display: flex; }
+        .center-content { text-align: center; margin: auto 0; }
+        .center-content h1 { font-size: 1.6rem; margin-bottom: 16px; color: #3A4A3A; }
+        .center-content p { font-size: 1rem; margin-bottom: 24px; line-height: 1.5; }
+        .scenario-card {
+            background: var(--white); border-radius: 16px; padding: 16px; margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;
+        }
+        .char-icon { font-size: 4rem; margin-bottom: 8px; }
+        .char-name { font-weight: bold; }
+        .dialogue-box {
+            background: #F8FBF8; border: 1px solid var(--primary); border-radius: 12px;
+            padding: 12px; font-size: 0.95rem; line-height: 1.4; margin-top: 8px;
+        }
+        .btn {
+            background: var(--white); border: 2px solid var(--primary); border-radius: 12px;
+            padding: 14px 16px; font-size: 0.95rem; color: var(--text); cursor: pointer;
+            width: 100%; margin-bottom: 12px; text-align: left; transition: all 0.2s ease; font-weight: 500;
+        }
+        .btn:active { background: var(--primary); }
+        .btn-action {
+            background: var(--dark); color: var(--white); text-align: center; font-weight: bold;
+            font-size: 1.1rem; border: none; margin-top: 10px;
+        }
+        .btn-action:active { opacity: 0.9; }
+        .feedback-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: flex-end; z-index: 100;
+        }
+        .feedback-card {
+            width: 100%; background: var(--white); border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 24px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            transform: translateY(100%); transition: transform 0.3s ease-out;
+        }
+        .feedback-card.show { transform: translateY(0); }
+        .feedback-title { font-size: 1.3rem; font-weight: bold; margin-bottom: 12px; }
+        .feedback-text { font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
+    </style>
 </head>
 <body>
-
-<div class="phone-container">
+<div class="phone">
     <div class="header">
-        <span id="header-title">失智症照顧挑戰賽</span>
-        <span id="score-display" style="font-size:0.9rem; float:right;">得分：0</span>
+        <span id="header-title">服務紀錄撰寫挑戰賽</span>
+        <span id="score-display" style="font-size:0.9rem;float:right;">得分：0</span>
         <div style="clear:both;"></div>
         <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
     </div>
-
     <div class="game-stage">
-        
         <div class="screen active" id="screen-start">
             <div class="center-content">
-                <div style="font-size: 5rem;">👩‍⚕️</div>
-                <h1>拒絕管理實務挑戰</h1>
-                <p>親愛的居服員，失智長者說「不要」時該怎麼辦？<br>點擊開始，挑戰 3 大日常照顧難關！</p>
+                <div style="font-size:5rem;">📋</div>
+                <h1>服務紀錄撰寫挑戰</h1>
+                <p>身為居服員，你知道如何寫出合格的服務紀錄嗎？<br>挑戰 8 題關於服務紀錄撰寫的知識，看看你得幾分！</p>
                 <button class="btn btn-action" onclick="startGame()">開始挑戰</button>
-                <a href="教學影片.html" class="btn" style="display:inline-block; margin-top:12px; text-decoration:none; background:#C5A89E; color:#fff; padding:10px 20px; border-radius:20px;">觀看教學影片</a>
             </div>
         </div>
-
         <div class="screen" id="screen-quiz">
             <div class="scenario-card">
-                <div class="character-img" id="char-icon">👵</div>
-                <div style="font-weight: bold;" id="char-name">李奶奶</div>
-                <div class="dialogue-box" id="question-text">題目載入中...</div>
+                <div class="char-icon" id="char-icon">📋</div>
+                <div class="char-name" id="char-name">題目</div>
+                <div class="dialogue-box" id="question-text">載入中...</div>
             </div>
             <div id="options-container"></div>
         </div>
-
         <div class="screen" id="screen-end">
             <div class="center-content">
-                <div style="font-size: 5rem;">🏆</div>
+                <div style="font-size:5rem;">🏆</div>
                 <h1>挑戰完成！</h1>
-                <p id="final-score-text" style="font-size:1.3rem; font-weight:bold; margin-bottom:12px;"></p>
-                <p>你已成功掌握失智症溝通心法！將實證知識運用於日常照顧中，能讓長者更安心，也讓你的照顧更輕鬆尊嚴！</p>
+                <p id="final-score-text" style="font-size:1.3rem;font-weight:bold;margin-bottom:12px;"></p>
+                <p>服務紀錄是居服員專業的展現，熟記撰寫原則，讓每一份紀錄都能通過督導查核！</p>
                 <button class="btn btn-action" onclick="resetGame()">再挑戰一次</button>
-                <a href="教學影片.html" class="btn" style="display:inline-block; margin-top:12px; text-decoration:none; background:#C5A89E; color:#fff; padding:10px 20px; border-radius:20px;">觀看教學影片</a>
             </div>
         </div>
-
     </div>
-
     <div class="feedback-overlay" id="feedback-modal">
         <div class="feedback-card" id="feedback-card">
             <div class="feedback-title" id="feedback-title"></div>
@@ -58,8 +111,188 @@
         </div>
     </div>
 </div>
+<script>
+const quizData = [
+    {
+        char: "📋", name: "核心原則",
+        question: "服務紀錄撰寫的核心原則為何？",
+        options: [
+            { text: "A. 服務內容需與申報代碼相符、記錄具體事實、呈現完整過程、記載安全觀察與個案反應", isCorrect: true },
+            { text: "B. 儘量使用「情況良好」「一切正常」等簡潔用語即可", isCorrect: false },
+            { text: "C. 只需要記錄服務開始和結束時間，過程不重要", isCorrect: false }
+        ],
+        feedback: {
+            correct: "✅ 正確！\n\n核心四大原則：①服務內容與申報代碼相符 ②記錄具體事實 ③呈現完整服務過程 ④記載安全觀察與個案反應。避免過度簡化或制式化紀錄！",
+            wrong: "❌ 再想想！\n\n核心原則包含：服務內容需與申報代碼相符、記錄具體事實、呈現完整服務過程、記載安全觀察與個案反應。切勿使用「情況良好」「一切正常」等空泛用語。"
+        }
+    },
+    {
+        char: "🍽️", name: "BA04 協助進食",
+        question: "下列何者為BA04(協助進食)的「必要」記錄內容？",
+        options: [
+            { text: "A. 代墊金額與找零", isCorrect: false },
+            { text: "B. 協助進食方式、食物處理情形、吞嚥安全觀察、個案進食反應", isCorrect: true },
+            { text: "C. 陪同散步活動內容", isCorrect: false }
+        ],
+        feedback: {
+            correct: "✅ 正確！\n\nBA04必要內容：①協助進食方式 ②食物處理情形（如剪碎）③吞嚥安全觀察（如無嗆咳）④個案進食反應。\n\n範例：「協助將餐食剪碎後餵食，觀察吞嚥情形，進食過程無明顯嗆咳。」",
+            wrong: "❌ 再想想！\n\nBA04必要記錄：協助進食方式、食物處理情形、吞嚥安全觀察、個案進食反應。代墊金額是BA16代購服務的內容，散步是BA20陪伴服務的內容。"
+        }
+    },
+    {
+        char: "📝", name: "建議紀錄架構",
+        question: "服務紀錄的建議架構包含哪三項？",
+        options: [
+            { text: "A. 服務前、服務中、服務後", isCorrect: false },
+            { text: "B. 服務動作、安全觀察、個案反應", isCorrect: true },
+            { text: "C. 服務人員、服務對象、服務地點", isCorrect: false }
+        ],
+        feedback: {
+            correct: "✅ 正確！\n\n建議架構：\n①服務動作：實際執行之照顧內容\n②安全觀察：服務過程中之安全維護與觀察事項\n③個案反應：個案配合度、情緒或身體狀況",
+            wrong: "❌ 再想想！\n\n建議架構為「服務動作、安全觀察、個案反應」三項：\n• 服務動作：做了什麼、如何協助\n• 安全觀察：觀察到什麼、安全維護措施\n• 個案反應：個案配合度、情緒或身體狀況"
+        }
+    },
+    {
+        char: "🛒", name: "BA16 代購服務",
+        question: "關於BA16代購服務，下列何者為「不建議」的紀錄方式？",
+        options: [
+            { text: "A. 代購素食便當1個，代墊80元，交付發票1張", isCorrect: false },
+            { text: "B. 僅寫「協助代購」未寫品項、金額及發票交付情形", isCorrect: true },
+            { text: "C. 記錄購買品項、數量、金額，並記載發票交付個案", isCorrect: false }
+        ],
+        feedback: {
+            correct: "✅ 正確！\n\nBA16常見缺失第一名就是「僅寫協助代購」。必須記錄：①購買項目 ②數量/金額 ③發票或收據幾張 ④是否交付個案 ⑤是否有找零。",
+            wrong: "❌ 再想想！\n\nBA16必須明確記錄：購買品項、數量、金額、發票/收據張數、是否交付個案、代墊與找零金額。只寫「協助代購」無法證明服務完成。"
+        }
+    },
+    {
+        char: "🤝", name: "BA20 陪伴服務",
+        question: "關於BA20陪伴服務的紀錄，下列何者正確？",
+        options: [
+            { text: "A. 僅記載「陪伴」二字即可", isCorrect: false },
+            { text: "B. 須具體描述陪伴內容，如聊天互動、閱讀報紙、散步活動等", isCorrect: true },
+            { text: "C. 不需要記載個案反應", isCorrect: false }
+        ],
+        feedback: {
+            correct: "✅ 正確！\n\nBA20須具體描述陪伴內容：聊天互動、閱讀報紙、散步活動、社交參與、情緒支持等。不可僅記載「陪伴」二字，須具體描述陪伴內容與個案反應。",
+            wrong: "❌ 再想想！\n\nBA20注意事項：①不可僅記載「陪伴」二字 ②須具體描述陪伴內容（聊天互動、閱讀報紙、散步活動等）③建議記錄個案反應與互動情況。"
+        }
+    },
+    {
+        char: "🔍", name: "查核重點",
+        question: "關於服務紀錄的查核重點，下列何者正確？",
+        options: [
+            { text: "A. 只要內容豐富即可，不需要與代碼一致", isCorrect: false },
+            { text: "B. 不同服務代碼執行時間可以完全重疊", isCorrect: false },
+            { text: "C. 紀錄內容須能支持申報代碼，不同代碼時間不得重疊", isCorrect: true }
+        ],
+        feedback: {
+            correct: "✅ 正確！\n\n四大查核重點：\n①代碼一致性：紀錄須能支持申報代碼\n②時間合理性：不同代碼執行時間不得重疊\n③流程完整性：呈現服務前、中、後過程\n④紀錄真實性：內容應反映實際服務",
+            wrong: "❌ 再想想！\n\n查核四大重點：①代碼一致性 ②時間合理性（不同代碼時間不得重疊）③流程完整性（服務前中後）④紀錄真實性（反映實際服務）。"
+        }
+    },
+    {
+        char: "💰", name: "BA16 金流紀錄",
+        question: "BA16代購服務中，金流紀錄應包含哪些內容？",
+        options: [
+            { text: "A. 不需要特別記錄金流", isCorrect: false },
+            { text: "B. 代墊金額、找零金額、發票/收據交付情形", isCorrect: true },
+            { text: "C. 只需記錄總花費金額", isCorrect: false }
+        ],
+        feedback: {
+            correct: "✅ 正確！\n\nBA16金流紀錄須完整可追溯：①代墊金額 ②找零金額 ③發票/收據張數 ④是否交付個案。\n範例：「代墊145元，交付發票1張，找零55元。」",
+            wrong: "❌ 再想想！\n\nBA16金流紀錄重點：代墊金額、找零金額、發票/收據張數及交付情形。金流紀錄需清楚可追溯，才能證明服務確實完成。"
+        }
+    },
+    {
+        char: "⚠️", name: "不建議用語",
+        question: "下列哪項是「不建議」出現在服務紀錄中的用語？",
+        options: [
+            { text: "A. 協助個案由床移位至輪椅，全程扶持避免跌倒", isCorrect: false },
+            { text: "B. 情況良好", isCorrect: true },
+            { text: "C. 觀察吞嚥狀況避免嗆咳，個案進食情形良好", isCorrect: false }
+        ],
+        feedback: {
+            correct: "✅ 正確！\n\n「情況良好」「一切正常」「照護如常」「同上」「服務完成」都是不建議的紀錄用語，因過度簡化、缺乏具體事實，無法呈現真實服務過程與個案反應。",
+            wrong: "❌ 再想想！\n\n不建議用語包含：情況良好、一切正常、照護如常、同上、服務完成。這些用語過度簡化，無法呈現具體服務事實與個案反應。"
+        }
+    }
+];
 
-<script src="js/script.js"></script>
+let currentQuestionIndex = 0;
+let score = 0;
 
+function updateScoreDisplay() {
+    document.getElementById('score-display').innerText = '得分：' + score;
+}
+
+function startGame() {
+    document.getElementById('screen-start').classList.remove('active');
+    document.getElementById('screen-quiz').classList.add('active');
+    currentQuestionIndex = 0;
+    score = 0;
+    updateScoreDisplay();
+    showQuestion();
+}
+
+function showQuestion() {
+    if (currentQuestionIndex >= quizData.length) {
+        endGame();
+        return;
+    }
+    const progressPercent = (currentQuestionIndex / quizData.length) * 100;
+    document.getElementById('progress').style.width = progressPercent + '%';
+    document.getElementById('header-title').innerText = '關卡 ' + (currentQuestionIndex + 1) + ' / ' + quizData.length;
+    const q = quizData[currentQuestionIndex];
+    document.getElementById('char-icon').innerText = q.char;
+    document.getElementById('char-name').innerText = q.name;
+    document.getElementById('question-text').innerText = q.question;
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    q.options.forEach(function (opt) {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.innerText = opt.text;
+        btn.onclick = function () { checkAnswer(opt.isCorrect); };
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(isCorrect) {
+    const q = quizData[currentQuestionIndex];
+    const modal = document.getElementById('feedback-modal');
+    const card = document.getElementById('feedback-card');
+    document.getElementById('feedback-title').innerText = isCorrect ? '✅ 選擇正確！' : '❌ 再想想！';
+    document.getElementById('feedback-title').style.color = isCorrect ? '#28A745' : '#DC3545';
+    document.getElementById('feedback-text').innerText = isCorrect ? q.feedback.correct : q.feedback.wrong;
+    if (isCorrect) { score++; updateScoreDisplay(); currentQuestionIndex++; }
+    modal.style.display = 'flex';
+    setTimeout(function () { card.classList.add('show'); }, 10);
+}
+
+function nextQuestion() {
+    const modal = document.getElementById('feedback-modal');
+    const card = document.getElementById('feedback-card');
+    card.classList.remove('show');
+    setTimeout(function () { modal.style.display = 'none'; showQuestion(); }, 300);
+}
+
+function endGame() {
+    document.getElementById('progress').style.width = '100%';
+    document.getElementById('header-title').innerText = '挑戰完成';
+    document.getElementById('final-score-text').innerText = '你的得分：' + score + ' / ' + quizData.length;
+    document.getElementById('screen-quiz').classList.remove('active');
+    document.getElementById('screen-end').classList.add('active');
+}
+
+function resetGame() {
+    document.getElementById('screen-end').classList.remove('active');
+    document.getElementById('screen-start').classList.add('active');
+    document.getElementById('progress').style.width = '0%';
+    document.getElementById('header-title').innerText = '服務紀錄撰寫挑戰賽';
+    score = 0;
+    updateScoreDisplay();
+}
+</script>
 </body>
 </html>
