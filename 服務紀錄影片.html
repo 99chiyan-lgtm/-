@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>服務紀錄撰寫原則教學</title>
+    <style>
+        :root {
+            --bg: #F0F4F0;
+            --pink: #D4E2D4;
+            --dark: #8BA88B;
+            --text: #3D4A3D;
+            --white: #FFFFFF;
+            --green: #4A7C4A;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC','Microsoft JhengHei',sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #222; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .phone {
+            width: 100%; max-width: 412px; height: 100vh; max-height: 846px;
+            background: var(--bg); color: var(--text); display: flex; flex-direction: column;
+            position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .top-bar {
+            padding: 14px 16px 10px; background: var(--pink); display: flex; align-items: center; justify-content: space-between;
+            border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 10;
+        }
+        .top-bar .title { font-weight: bold; font-size: 1rem; opacity: 0.7; }
+        .top-bar .counter { font-size: 0.9rem; opacity: 0.7; }
+        .progress-track { width: 100%; height: 4px; background: rgba(255,255,255,0.5); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: var(--dark); transition: width 0.4s ease; border-radius: 2px; }
+        .stage { flex: 1; position: relative; overflow: hidden; }
+        .slide {
+            position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+            padding: 30px 24px; opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
+        }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .icon-area { text-align: center; font-size: 4rem; margin-bottom: 12px; }
+        .headline {
+            font-size: 1.9rem; font-weight: bold; text-align: center; margin-bottom: 10px;
+            color: #3A4A3A; line-height: 1.3;
+        }
+        .headline-sm { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 8px; color: #3A4A3A; line-height: 1.3; }
+        .subhead {
+            font-size: 1.15rem; text-align: center; line-height: 1.5; margin-bottom: 14px; opacity: 0.8;
+        }
+        .subtitle-box {
+            background: var(--white); border-radius: 12px; padding: 18px 20px; margin-top: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); min-height: 60px;
+        }
+        .subtitle-line {
+            font-size: 1.1rem; line-height: 1.6; margin-bottom: 8px; opacity: 0; transform: translateY(8px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .subtitle-line.show { opacity: 1; transform: translateY(0); }
+        .highlight-box {
+            background: var(--pink); border-radius: 14px; padding: 14px; margin-top: 8px; text-align: center;
+            font-weight: bold; font-size: 1.1rem;
+        }
+        .highlight-box.green { background: #C8E6C9; border: 2px solid #66BB6A; }
+        .highlight-box.red { background: #FFCDD2; border: 2px solid #EF5350; }
+        .tag {
+            display: inline-block; background: var(--dark); color: #fff; border-radius: 12px;
+            padding: 4px 12px; font-size: 0.9rem; margin-bottom: 6px;
+        }
+        .controls {
+            padding: 10px 16px 16px; display: flex; align-items: center; gap: 12px; background: var(--bg);
+        }
+        .ctrl-btn {
+            background: var(--white); border: 1px solid var(--pink); border-radius: 8px;
+            padding: 10px 16px; font-size: 0.95rem; cursor: pointer; color: var(--text); transition: 0.15s;
+        }
+        .ctrl-btn:active { background: var(--pink); }
+        .ctrl-btn.primary { background: var(--dark); color: #fff; border: none; flex: 1; }
+        .flex-col { display: flex; flex-direction: column; flex: 1; justify-content: center; }
+        .el-enter { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .el-enter.show { opacity: 1; transform: translateY(0); }
+        .check-list { list-style: none; padding: 0; }
+        .check-list li { padding: 4px 0; font-size: 0.95rem; }
+        .check-list li::before { content: '✅ '; }
+        .warn-list { list-style: none; padding: 0; }
+        .warn-list li { padding: 4px 0; font-size: 0.95rem; }
+        .warn-list li::before { content: '⚠️ '; }
+        .code-block {
+            background: #2D3A2D; color: #E8F5E9; border-radius: 10px; padding: 12px 16px;
+            font-size: 0.9rem; line-height: 1.5; margin-top: 10px; text-align: left;
+        }
+        .code-block .label { color: #A5D6A7; font-weight: bold; }
+        .key-visual { font-size: 5rem; text-align: center; margin-bottom: 8px; line-height: 1; }
+        .badge { display: inline-block; background: var(--dark); color: #fff; border-radius: 20px; padding: 6px 16px; font-size: 1rem; margin: 4px 2px; }
+        .data-badge { display: inline-block; background: var(--dark); color: #fff; border-radius: 20px; padding: 6px 16px; font-size: 1rem; margin: 4px 2px; }
+    </style>
+</head>
+<body>
+<div class="phone">
+    <div class="top-bar">
+        <span class="title">服務紀錄撰寫原則教學</span>
+        <span class="counter" id="slideCounter">1 / 13</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="stage" id="stage">
+
+        <!-- S1: 開場 -->
+        <div class="slide active" data-duration="12">
+            <div class="flex-col">
+                <div class="key-visual">📋</div>
+                <div class="headline">服務紀錄撰寫原則</div>
+                <div class="subhead">居服員必備的專業紀錄知能</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">一份好的服務紀錄，</div>
+                    <div class="subtitle-line" data-delay="3">是專業照顧的證明，</div>
+                    <div class="subtitle-line" data-delay="6">也是服務品質的保證。</div>
+                </div>
+                <div id="playOverlay" style="margin-top:20px;text-align:center;">
+                    <button id="playBtn" style="background:var(--dark);color:#fff;border:none;border-radius:16px;padding:14px 40px;font-size:1.2rem;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);">▶ 開始播放</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- S2: 核心原則 -->
+        <div class="slide" data-duration="16">
+            <div class="flex-col">
+                <div class="key-visual">🎯</div>
+                <div class="headline">核心四大原則</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">① 服務內容需與申報代碼相符</div>
+                    <div class="subtitle-line" data-delay="3">② 記錄具體服務事實</div>
+                    <div class="subtitle-line" data-delay="6">③ 呈現完整服務過程</div>
+                    <div class="subtitle-line" data-delay="9">④ 記載安全觀察與個案反應</div>
+                </div>
+                <div class="highlight-box el-enter" data-delay="13" style="background:#C8E6C9;">
+                    <div style="font-size:0.95rem;font-weight:normal;">避免過度簡化或制式化紀錄</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- S3: 建議紀錄架構 -->
+        <div class="slide" data-duration="18">
+            <div class="flex-col">
+                <div class="headline-sm">建議紀錄架構</div>
+                <div class="subhead">三層式撰寫法</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0" style="font-weight:bold;color:var(--green);">📌 服務動作</div>
+                    <div class="subtitle-line" data-delay="2" style="font-size:0.95rem;">「實際執行之照顧內容」</div>
+                    <div class="subtitle-line" data-delay="5" style="font-weight:bold;color:var(--green);">🛡️ 安全觀察</div>
+                    <div class="subtitle-line" data-delay="7" style="font-size:0.95rem;">「服務過程中之安全維護與觀察事項」</div>
+                    <div class="subtitle-line" data-delay="10" style="font-weight:bold;color:var(--green);">👤 個案反應</div>
+                    <div class="subtitle-line" data-delay="12" style="font-size:0.95rem;">「個案配合度、情緒或身體狀況」</div>
+                </div>
+                <div class="el-enter" data-delay="15" style="margin-top:6px;text-align:center;font-size:0.9rem;opacity:0.7;">
+                    撰寫應包含：做了什麼、如何協助、觀察到什麼、個案反應、安全維護措施
+                </div>
+            </div>
+        </div>
+
+        <!-- S4: 移位服務範例 -->
+        <div class="slide" data-duration="14">
+            <div class="flex-col">
+                <div class="headline-sm">移位服務</div>
+                <div class="subhead">建議紀錄範例</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0" style="font-size:1.2rem;">「協助個案由床移位至輪椅。」</div>
+                    <div class="subtitle-line" data-delay="4" style="font-size:1.2rem;">「全程扶持避免跌倒。」</div>
+                    <div class="subtitle-line" data-delay="8" style="font-size:1.2rem;">「個案可配合口語指令完成移位。」</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- S5: BA04 協助進食 -->
+        <div class="slide" data-duration="16">
+            <div class="flex-col">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                    <span class="tag">BA04</span>
+                </div>
+                <div class="headline">協助進食</div>
+                <div class="subhead">必要記錄內容</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">✅ 協助進食方式</div>
+                    <div class="subtitle-line" data-delay="3">✅ 食物處理情形（如剪碎）</div>
+                    <div class="subtitle-line" data-delay="6">✅ 吞嚥安全觀察</div>
+                    <div class="subtitle-line" data-delay="9">✅ 個案進食反應</div>
+                </div>
+                <div class="code-block el-enter" data-delay="13">
+                    <div class="label">📝 範例：</div>
+                    <div>協助將餐食剪碎後餵食，觀察吞嚥狀況避免嗆咳，個案進食情形良好。</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- S6: BA20 陪伴服務 -->
+        <div class="slide" data-duration="16">
+            <div class="flex-col">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                    <span class="tag">BA20</span>
+                </div>
+                <div class="headline">陪伴服務</div>
+                <div class="subhead">可記錄內容</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">💬 聊天互動</div>
+                    <div class="subtitle-line" data-delay="2.5">📰 閱讀報紙</div>
+                    <div class="subtitle-line" data-delay="5">🚶 散步活動</div>
+                    <div class="subtitle-line" data-delay="7.5">🤝 社交參與</div>
+                    <div class="subtitle-line" data-delay="10">💖 情緒支持</div>
+                </div>
+                <div class="highlight-box red el-enter" data-delay="13">
+                    ⚠️ 不可僅記載「陪伴」二字<br>須具體描述陪伴內容
+                </div>
+            </div>
+        </div>
+
+        <!-- S7: BA20 陪伴服務範例 -->
+        <div class="slide" data-duration="14">
+            <div class="flex-col">
+                <div class="headline-sm">BA20 陪伴服務</div>
+                <div class="subhead">建議紀錄範例</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0" style="font-size:1.2rem;">「陪同閱讀報紙並討論時事。」</div>
+                    <div class="subtitle-line" data-delay="4" style="font-size:1.2rem;">「陪同於住家周邊散步。」</div>
+                    <div class="subtitle-line" data-delay="8" style="font-size:1.2rem;">「進行情緒支持與社交互動。」</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- S8: BA16 代購服務 原則 -->
+        <div class="slide" data-duration="19">
+            <div class="flex-col">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                    <span class="tag">BA16</span>
+                </div>
+                <div class="headline">代購服務紀錄查核重點</div>
+                <div class="subhead">查核重點</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">🛍️ 實際代購內容</div>
+                    <div class="subtitle-line" data-delay="2.5">💰 代購金額</div>
+                    <div class="subtitle-line" data-delay="5">🧾 發票或收據交付情形</div>
+                    <div class="subtitle-line" data-delay="7.5">✅ 證明確實完成代購服務</div>
+                    <div class="subtitle-line" data-delay="10">🔗 金流紀錄清楚可追溯</div>
+                </div>
+                <div class="code-block el-enter" data-delay="14">
+                    <div class="label">📝 範例：</div>
+                    <div>代購素食便當1個。核對購買品項及金額無誤。個案確認餐點內容正確並收受發票。代墊80元，交付發票2張。</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- S9: BA16 金流紀錄 -->
+        <div class="slide" data-duration="18">
+            <div class="flex-col">
+                <div class="headline-sm">BA16 金流紀錄</div>
+                <div class="subhead">必須完整可追溯</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0" style="font-weight:bold;">購買項目</div>
+                    <div class="subtitle-line" data-delay="2" style="font-size:0.95rem;">便當、日用品、藥品等</div>
+                    <div class="subtitle-line" data-delay="4.5" style="font-weight:bold;">購買資訊</div>
+                    <div class="subtitle-line" data-delay="6.5" style="font-size:0.95rem;">數量、金額、店家名稱</div>
+                    <div class="subtitle-line" data-delay="9" style="font-weight:bold;">憑證資訊</div>
+                    <div class="subtitle-line" data-delay="11" style="font-size:0.95rem;">發票張數、收據張數、是否交付個案</div>
+                    <div class="subtitle-line" data-delay="13.5" style="font-weight:bold;">交付款項</div>
+                    <div class="subtitle-line" data-delay="15.5" style="font-size:0.95rem;">代墊金額、找零金額、交付情形</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- S10: 常見缺失 -->
+        <div class="slide" data-duration="16">
+            <div class="flex-col">
+                <div class="key-visual">⚠️</div>
+                <div class="headline">常見缺失</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line warn-list" data-delay="0">
+                        <li style="list-style:none;padding:4px 0;font-size:1.2rem;">僅寫「協助代購」</li>
+                    </div>
+                    <div class="subtitle-line warn-list" data-delay="2.5">
+                        <li style="list-style:none;padding:4px 0;font-size:1.2rem;">未寫購買品項</li>
+                    </div>
+                    <div class="subtitle-line warn-list" data-delay="5">
+                        <li style="list-style:none;padding:4px 0;font-size:1.2rem;">未寫金額</li>
+                    </div>
+                    <div class="subtitle-line warn-list" data-delay="7.5">
+                        <li style="list-style:none;padding:4px 0;font-size:1.2rem;">未寫發票或收據</li>
+                    </div>
+                    <div class="subtitle-line warn-list" data-delay="10">
+                        <li style="list-style:none;padding:4px 0;font-size:1.2rem;">未記錄交付款項</li>
+                    </div>
+                </div>
+                <div class="highlight-box red el-enter" data-delay="13">
+                    ⚠️ 無法呈現服務完成證據
+                </div>
+            </div>
+        </div>
+
+        <!-- S11: 不建議用語 -->
+        <div class="slide" data-duration="14">
+            <div class="flex-col">
+                <div class="headline-sm">不建議紀錄用語</div>
+                <div class="subhead">避免過度簡化</div>
+                <div class="highlight-box red" style="margin-top:8px;">
+                    <div style="font-size:1.2rem;">❌ 「情況良好」</div>
+                    <div style="font-size:1.2rem;">❌ 「一切正常」</div>
+                    <div style="font-size:1.2rem;">❌ 「照護如常」</div>
+                    <div style="font-size:1.2rem;">❌ 「同上」</div>
+                    <div style="font-size:1.2rem;">❌ 「服務完成」</div>
+                </div>
+                <div class="subtitle-box el-enter" data-delay="9" style="margin-top:10px;">
+                    <div class="subtitle-line" data-delay="0">應具體描述做了什麼、觀察到什麼、個案反應如何</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- S12: 查核重點 -->
+        <div class="slide" data-duration="16">
+            <div class="flex-col">
+                <div class="key-visual">🔍</div>
+                <div class="headline-sm">服務紀錄查核四大重點</div>
+                <div class="subtitle-box" style="margin-top:8px;">
+                    <div class="subtitle-line" data-delay="0" style="font-weight:bold;">🔹 代碼一致性</div>
+                    <div class="subtitle-line" data-delay="2.5" style="font-size:1.1rem;">服務紀錄須能支持申報代碼</div>
+                    <div class="subtitle-line" data-delay="5" style="font-weight:bold;">🔹 時間合理性</div>
+                    <div class="subtitle-line" data-delay="7.5" style="font-size:1.1rem;">不同代碼執行時間不得重疊</div>
+                    <div class="subtitle-line" data-delay="10" style="font-weight:bold;">🔹 流程完整性</div>
+                    <div class="subtitle-line" data-delay="12.5" style="font-size:1.1rem;">需呈現服務前、中、後過程</div>
+                </div>
+                <div class="highlight-box green el-enter" data-delay="14" style="margin-top:10px; font-size:1.1rem;">
+                    🔹 紀錄真實性：內容應反映實際提供之服務
+                </div>
+            </div>
+        </div>
+
+        <!-- S13: 結尾 -->
+        <div class="slide" data-duration="12">
+            <div class="flex-col" style="text-align:center;">
+                <div style="font-size:4rem;margin-bottom:8px;">📋</div>
+                <div class="headline" style="font-size:1.4rem;">好的服務紀錄</div>
+                <div class="headline" style="font-size:1.4rem;margin-bottom:10px;">守護照顧品質與專業</div>
+                <div class="subtitle-box">
+                    <div class="subtitle-line" data-delay="0">準備好測試你的知識了嗎？</div>
+                </div>
+                <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+                    <a href="服務紀錄挑戰.html" target="_blank" style="background:var(--dark);color:#fff;border:none;border-radius:20px;padding:10px 24px;font-size:1.1rem;font-weight:bold;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);">👉 開始互動挑戰</a>
+                </div>
+                <div style="margin-top:12px;">
+                    <div class="subtitle-line" data-delay="4" style="opacity:0.7;">點擊上方按鈕開始練習</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div style="padding:0 16px 4px;">
+        <input type="range" id="timeline" min="0" max="12" value="0" step="1"
+               style="width:100%;height:6px;accent-color:var(--dark);cursor:pointer;">
+    </div>
+    <div class="controls">
+        <button class="ctrl-btn" id="btnToggle">⏸ 暫停</button>
+        <button class="ctrl-btn primary" id="btnNext">下一幕 →</button>
+        <button class="ctrl-btn" id="btnRestart">↺</button>
+    </div>
+</div>
+
+<audio id="bgm" loop preload="auto">
+    <source src="assets/background-music.mp3" type="audio/mpeg">
+</audio>
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const progressFill = document.getElementById('progressFill');
+    const counter = document.getElementById('slideCounter');
+    const btnToggle = document.getElementById('btnToggle');
+    const btnNext = document.getElementById('btnNext');
+    const btnRestart = document.getElementById('btnRestart');
+    const timeline = document.getElementById('timeline');
+    const bgm = document.getElementById('bgm');
+    let current = 0;
+    let paused = false;
+    let timer = null;
+    let subTimers = [];
+    let seeking = false;
+
+    function showSlide(index) {
+        slides.forEach((s, i) => s.classList.toggle('active', i === index));
+        const pct = ((index + 1) / slides.length * 100);
+        progressFill.style.width = pct + '%';
+        counter.textContent = (index + 1) + ' / ' + slides.length;
+        if (!seeking) timeline.value = index;
+    }
+
+    function animateSubtitles(slideEl) {
+        subTimers.forEach(clearTimeout);
+        subTimers = [];
+        const lines = slideEl.querySelectorAll('.subtitle-line');
+        lines.forEach(line => {
+            line.classList.remove('show');
+            const delay = parseFloat(line.dataset.delay) || 0;
+            const t = setTimeout(() => line.classList.add('show'), delay * 1000);
+            subTimers.push(t);
+        });
+        const els = slideEl.querySelectorAll('.el-enter');
+        els.forEach(el => {
+            el.classList.remove('show');
+            const delay = parseFloat(el.dataset.delay) || 0;
+            const t = setTimeout(() => el.classList.add('show'), delay * 1000);
+            subTimers.push(t);
+        });
+    }
+
+    function startAutoAdvance() {
+        if (timer) clearTimeout(timer);
+        if (paused) return;
+        const duration = (parseFloat(slides[current].dataset.duration) || 5) * 1000;
+        timer = setTimeout(() => {
+            if (!paused) {
+                if (current < slides.length - 1) { current++; goTo(current); }
+                else { paused = true; btnToggle.textContent = '▶ 重播'; }
+            }
+        }, duration);
+    }
+
+    function goTo(index) {
+        current = index;
+        showSlide(current);
+        animateSubtitles(slides[current]);
+        startAutoAdvance();
+    }
+
+    timeline.addEventListener('input', () => {
+        seeking = true;
+        if (timer) clearTimeout(timer);
+        subTimers.forEach(clearTimeout);
+        const idx = parseInt(timeline.value);
+        current = idx;
+        showSlide(current);
+        animateSubtitles(slides[current]);
+        if (!paused) startAutoAdvance();
+        setTimeout(() => { seeking = false; }, 100);
+    });
+
+    btnToggle.addEventListener('click', () => {
+        if (current === slides.length - 1 && paused) {
+            current = 0; paused = false;
+            btnToggle.textContent = '⏸ 暫停';
+            bgm.play();
+            goTo(0);
+            return;
+        }
+        paused = !paused;
+        btnToggle.textContent = paused ? '▶ 播放' : '⏸ 暫停';
+        if (paused) { bgm.pause(); if (timer) clearTimeout(timer); }
+        else { bgm.play().catch(() => {}); startAutoAdvance(); }
+    });
+
+    btnNext.addEventListener('click', () => {
+        if (timer) clearTimeout(timer);
+        subTimers.forEach(clearTimeout);
+        if (current < slides.length - 1) { current++; goTo(current); }
+        else { paused = true; btnToggle.textContent = '▶ 重播'; }
+    });
+
+    btnRestart.addEventListener('click', () => {
+        if (timer) clearTimeout(timer);
+        subTimers.forEach(clearTimeout);
+        current = 0; paused = false;
+        btnToggle.textContent = '⏸ 暫停';
+        goTo(0);
+    });
+
+    document.getElementById('playBtn').addEventListener('click', () => {
+        bgm.play();
+        document.getElementById('playOverlay').style.display = 'none';
+        goTo(0);
+    });
+</script>
+</body>
+</html>
