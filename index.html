@@ -67,6 +67,14 @@
         .feedback-title { font-size: 1.3rem; font-weight: bold; margin-bottom: 12px; }
         .feedback-text { font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
     </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CJ8WY89JT1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CJ8WY89JT1');
+    </script>
 </head>
 <body>
 <div class="phone">
@@ -227,6 +235,7 @@ function updateScoreDisplay() {
 }
 
 function startGame() {
+    gtag('event', 'quiz_started');
     document.getElementById('screen-start').classList.remove('active');
     document.getElementById('screen-quiz').classList.add('active');
     currentQuestionIndex = 0;
@@ -260,6 +269,7 @@ function showQuestion() {
 
 function checkAnswer(isCorrect) {
     const q = quizData[currentQuestionIndex];
+    gtag('event', 'question_answered', { question: currentQuestionIndex + 1, correct: isCorrect });
     const modal = document.getElementById('feedback-modal');
     const card = document.getElementById('feedback-card');
     document.getElementById('feedback-title').innerText = isCorrect ? '✅ 選擇正確！' : '❌ 再想想！';
@@ -278,6 +288,7 @@ function nextQuestion() {
 }
 
 function endGame() {
+    gtag('event', 'quiz_completed', { score: score, total: quizData.length });
     document.getElementById('progress').style.width = '100%';
     document.getElementById('header-title').innerText = '挑戰完成';
     document.getElementById('final-score-text').innerText = '你的得分：' + score + ' / ' + quizData.length;
